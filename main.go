@@ -4,43 +4,24 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/longhorn/sparse-tools/sparse"
 	"io"
 	"log"
 	"os"
+	"syscall"
 )
 
 func main() {
-	str, err := GetFileChecksum("test")
+	str, err := getFileChecksum("test")
 	if err != nil {
 		fmt.Println("error " + err.Error())
 	} else {
-		fmt.Println(str)
+		fmt.Println("checksum" + str)
 	}
 }
 
-func GetFileChecksum(filePath string) (string, error) {
-	//f, err := sparse.NewDirectFileIoProcessor(filePath, os.O_RDONLY, 0)
-	//if err != nil {
-	//	return "", err
-	//}
-	//defer f.Close()
+func getFileChecksum(filePath string) (string, error) {
+	f, err := os.OpenFile(filePath, os.O_RDONLY|syscall.O_DIRECT, 0)
 
-	// 4MB
-	//buf := make([]byte, 1<<22)
-	//h := sha512.New()
-	//
-	//for {
-	//	nr, err := f.Read(buf)
-	//	if err != nil {
-	//		if err != io.EOF {
-	//			return "", err
-	//		}
-	//		break
-	//	}
-	//	h.Write(buf[:nr])
-	//}
-	f, err := sparse.NewDirectFileIoProcessor(filePath, os.O_RDONLY, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
