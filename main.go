@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"github.com/longhorn/sparse-tools/sparse"
 	"io"
 	"log"
 	"os"
@@ -39,7 +40,7 @@ func GetFileChecksum(filePath string) (string, error) {
 	//	}
 	//	h.Write(buf[:nr])
 	//}
-	f, err := os.Open(filePath)
+	f, err := sparse.NewDirectFileIoProcessor(filePath, os.O_RDONLY, 0)
 	if err != nil {
 		log.Fatal(err)
 	}
