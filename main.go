@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crypto/sha512"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"github.com/longhorn/sparse-tools/sparse"
 	"io"
+	"log"
 	"os"
 )
 
@@ -19,26 +19,37 @@ func main() {
 }
 
 func GetFileChecksum(filePath string) (string, error) {
-	f, err := sparse.NewDirectFileIoProcessor(filePath, os.O_RDONLY, 0)
+	//f, err := sparse.NewDirectFileIoProcessor(filePath, os.O_RDONLY, 0)
+	//if err != nil {
+	//	return "", err
+	//}
+	//defer f.Close()
+
+	// 4MB
+	//buf := make([]byte, 1<<22)
+	//h := sha512.New()
+	//
+	//for {
+	//	nr, err := f.Read(buf)
+	//	if err != nil {
+	//		if err != io.EOF {
+	//			return "", err
+	//		}
+	//		break
+	//	}
+	//	h.Write(buf[:nr])
+	//}
+	f, err := os.Open(filePath)
 	if err != nil {
-		return "", err
+		log.Fatal(err)
 	}
 	defer f.Close()
 
-	// 4MB
-	buf := make([]byte, 1<<22)
-	h := sha512.New()
-
-	for {
-		nr, err := f.Read(buf)
-		if err != nil {
-			if err != io.EOF {
-				return "", err
-			}
-			break
-		}
-		h.Write(buf[:nr])
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		log.Fatal(err)
 	}
 
+	fmt.Printf("%x", h.Sum(nil))
 	return hex.EncodeToString(h.Sum(nil)), nil
 }
