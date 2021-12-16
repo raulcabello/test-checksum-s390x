@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	str, err := getFileChecksum("test")
+	str, err := getFileChecksum("test-generated")
 	if err != nil {
 		fmt.Println("error " + err.Error())
 	} else {
@@ -20,6 +20,7 @@ func main() {
 }
 
 func getFileChecksum(filePath string) (string, error) {
+	f, _ := os.Create(filePath)
 	f, err := os.OpenFile(filePath, os.O_RDONLY|syscall.O_DIRECT, 0)
 
 	if err != nil {
